@@ -20,7 +20,14 @@ class Person:
 
     def evolve(self, clock: object) -> object:
         """Allow this person to evolve (example : birthday, special project planed ...)"""
+        print("\t\t\t {} is evolving".format(self))
         for event in self.scheduled_events:
             if event.time == clock.time:
                 event.act(self)
         return self
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return self.name

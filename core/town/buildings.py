@@ -30,8 +30,15 @@ class Building:
             Allow all the components to evolve. All the update() of these elements will be launched
             one time
         """
+        print("\t\t {} is evolving".format(self))
         self._update(clock)
         return self
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return self.name + " Building's"
 
 
 class House(Building):
@@ -79,6 +86,7 @@ class House(Building):
             Allow all the components to evolve. All the update() of these elements will be launched
             one time
         """
+        print("\t\t {} is evolving".format(self))
         for person in self.peoples_living_in:
             person.evolve(clock)
         self._update(clock)
@@ -131,6 +139,7 @@ class CommercialBuilding(Building):
             Allow all the components to evolve. All the update() of these elements will be launched
             one time
         """
+        print("\t\t {} is evolving".format(self))
         if self.is_in_deficit():
             self._is_searching_for_applicants = False
         if self.capital != self._last_capital:

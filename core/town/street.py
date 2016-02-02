@@ -52,6 +52,7 @@ class Street:
            Allow all the buildings and the persons inside to evolve. All the update() methods of these elements
            will be launched one time.
         """
+        print("\t {} is evolving".format(self))
         for building in self.buildings:
             building.evolve(clock)
         self._update(clock)

@@ -38,6 +38,12 @@ class Time:
         """Return the current time in years"""
         return self.get_in_weeks() // self.year_lenght
 
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return str(self.time)
+
 
 class TriggerEvent:
     def __init__(self, at: float):

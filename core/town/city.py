@@ -70,6 +70,7 @@ class City:
            Allow the city and all the streets / buildings / persons inside to evolde. All the update() methods
            of these elements will be launched one time
         """
+        print("{} is evolving".format(self))
         for street in self.streets:
             street.evolve(self.time)
         return self

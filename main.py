@@ -5,6 +5,7 @@ Licence MIT
 """
 
 import sys
+import time
 import core
 
 
@@ -58,7 +59,10 @@ def main(*args):
     print_city_streets_and_connections(city)
 
     while True:
+        print("Evolving - Time is {}".format(the_time))
         the_time.next()
+        city.evolve()
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
