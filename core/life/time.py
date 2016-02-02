@@ -38,6 +38,22 @@ class Time:
         """Return the current time in years"""
         return self.get_in_weeks() // self.year_lenght
 
+    def get_full_year_length_in(self, category: str) -> int:
+        """Return the length of the year in 'category' unit"""
+        if category.lower() in ['years', 'weeks', 'days', 'hours', 'minutes', 'seconds']:
+            if category.lower() == 'years':
+                return 1
+            elif category.lower() == 'weeks':
+                return self.year_lenght
+            elif category.lower() == 'days':
+                return self.week_lenght * self.get_full_year_length_in('weeks')
+            elif category.lower() == 'hours':
+                return self.day_lenght * self.get_full_year_length_in('days')
+            elif category.lower() == 'minutes':
+                return self.hour_lenght * self.get_full_year_length_in('hours')
+            elif category.lower() == 'seconds':
+                return self.minute_lenght * self.get_full_year_length_in('minutes')
+
     def __repr__(self):
         return self.__str__()
 
