@@ -14,6 +14,21 @@ class Street:
         self.buildings = []
         self.connections = []
 
+    def get_buildind_by_name(self, name: str) -> Building:
+        """Search for a building named 'name' and return it if it is in this street"""
+        if self.has_building_name(name):
+            for building in self.buildings:
+                if building.name == name:
+                    return building
+        raise ValueError("Building named '{}' can't be located in this street".format(name))
+
+    def has_building_name(self, name: str):
+        """Search for a building named 'name' in this street and return True or False whether it had been found or not"""
+        for building in self.buildings:
+            if building.name == name:
+                return True
+        return False
+
     def add(self, building: Building) -> object:
         """Add a building in the street"""
         self.buildings.append(building)
@@ -31,6 +46,20 @@ class Street:
         if self not in a_street.connections:
             a_street.connect_to(self)
         return self
+
+    def evolve(self, clock: object) -> object:
+        """
+           Allow all the buildings and the persons inside to evolve. All the update() methods of these elements
+           will be launched one time.
+        """
+        for building in self.buildings:
+            building.evolve(clock)
+        self._update(clock)
+        return self
+
+    def _update(self, clock: object):
+        """This will update every street"""
+        pass
 
     def __repr__(self):
         return self.__str__

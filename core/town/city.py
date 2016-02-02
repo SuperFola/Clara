@@ -6,6 +6,7 @@ Licence MIT
 
 from .buildings import Building
 from .street import Street
+from ..life import time
 
 
 class City:
@@ -13,6 +14,12 @@ class City:
         self.name = name
         self.size = size
         self.streets = []
+        self.time = None
+
+    def add_clock(self, clock: time.Time) -> object:
+        """Add a clock to the city (to 'regulate' it)"""
+        self.time = clock
+        return self
 
     def has(self, building_type: Building) -> bool:
         """Return True of False whether a building (which type is building_type) is in the city or not"""
@@ -56,6 +63,15 @@ class City:
         for i in range(len(self.streets)):
             if self.streets[i].name == street_name:
                 self.streets[i].append(building)
+        return self
+
+    def evolve(self) -> object:
+        """
+           Allow the city and all the streets / buildings / persons inside to evolde. All the update() methods
+           of these elements will be launched one time
+        """
+        for street in self.streets:
+            street.evolve(self.time)
         return self
 
     def __repr__(self):

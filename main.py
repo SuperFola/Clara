@@ -28,19 +28,37 @@ def print_city_streets_and_connections(city: core.town.city.City):
 
 
 def main(*args):
-    if args:
-        city_name, *streets = args
-    else:
-        city_name, *streets = "SmallVille", "Baxbaxwalanuksiwe", "Ardakaniz", "Qames"
+    street1 = "Baxbaxwalanuksiwe"
+    street2 = "Ardakaniz"
+    street3 = "Qames"
     print(core.constants.NAME + " is starting ...")
-    city = core.town.city.City(city_name)
-    baxbax_street = core.town.street.Street(streets[0])
-    arda_street = core.town.street.Street(streets[1])
-    qames_street = core.town.street.Street(streets[2])
-    city.add_street(baxbax_street).add_street(arda_street).add_street(qames_street)
-    city.get_street_by_name(streets[0]).connect_to(city.get_street_by_name(streets[1])).connect_to(city.get_street_by_name(streets[2]))
+
+    the_time = core.life.time.Time()
+
+    a_person = core.life.person.Person("Patrick", "Joe", 0)
+
+    city = core.town.city.City("SmallVille")
+    city.add_clock(the_time)\
+        .add_street(
+            core.town.street.Street(street1)
+        ).add_street(
+            core.town.street.Street(street2)
+        ).add_street(
+            core.town.street.Street(street3)
+        )
+    city.get_street_by_name(street1)\
+        .connect_to(city.get_street_by_name(street2))\
+        .connect_to(city.get_street_by_name(street3))
+    city.get_street_by_name(street1)\
+        .add(core.town.buildings.House("A house"))
+    city.get_street_by_name(street1)\
+        .get_buildind_by_name("A house")\
+        .add_settler(a_person)
 
     print_city_streets_and_connections(city)
+
+    while True:
+        the_time.next()
 
 
 if __name__ == '__main__':

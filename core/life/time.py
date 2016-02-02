@@ -40,8 +40,13 @@ class Time:
 
 
 class TriggerEvent:
-    def __init__(self):
-        pass
+    def __init__(self, at: float):
+        self.triggered = False
+        self.time = at
+
+    def trigger(self):
+        """Activate the trigger"""
+        self.triggered = True
 
 
 class Action:
@@ -56,6 +61,12 @@ class Habit:
         self.launched = False
         self.action = action
 
+    def check(self) -> object:
+        """Check if the habit should be launched"""
+        if self.trigger_event.triggered:
+            self.start()
+        return self
+
     def start(self) -> object:
         """Start 'doing' the habit"""
         self.launched = True
@@ -65,3 +76,15 @@ class Habit:
         """Stop 'doing' an habit"""
         self.launched = False
         return self
+
+
+class Event(Habit):
+    def __init__(self, name: str, trigger_event: TriggerEvent, action: Action):
+        super().__init__(name, trigger_event, action)
+        self.has_already_been_launched = False
+
+    def start(self) -> object:
+        """Start 'doing' the habit"""
+        if not self.has_already_been_launched:
+            self.has_already_been_launched = True
+            super(self).start()

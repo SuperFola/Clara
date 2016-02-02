@@ -21,6 +21,18 @@ class Building:
                 score += 1
         return score / len(self.interests_involved)
 
+    def _update(self, clock: object):
+        """This will update some parts of the building"""
+        pass
+
+    def evolve(self, clock: object) -> object:
+        """
+            Allow all the components to evolve. All the update() of these elements will be launched
+            one time
+        """
+        self._update(clock)
+        return self
+
 
 class House(Building):
     def __init__(self, name: str="", *interests_involved):
@@ -62,17 +74,40 @@ class House(Building):
                 self.peoples_living_in.pop(i)
         return self
 
+    def evolve(self, clock: object) -> object:
+        """
+            Allow all the components to evolve. All the update() of these elements will be launched
+            one time
+        """
+        for person in self.peoples_living_in:
+            person.evolve(clock)
+        self._update(clock)
+        return self
+
 
 class CommercialBuilding(Building):
     def __init__(self, name: str="", chief: Person=Person(), *interests_involved):
         super().__init__(name, *interests_involved)
         self.capital = 0
+        self._last_capital = self.capital
+        self._capital_history = {}
         self.available_goods = {}
         self.chief = chief
+        self.employees = []
+        self._is_searching_for_applicants = False
+
+    def hire_somebody(self, somebody: Person) -> object:
+        """Hire a new person in the enterprise / shop"""
+        self.employees.append(somebody)
+        return self
+
+    def is_searching_for_applicants(self) -> bool:
+        """Return True or False whether the entreprise / shop is searching for someone"""
+        return self._is_searching_for_applicants
 
     def is_in_deficit(self) -> bool:
         """Check if the CommercialBuilding is in deficit and return True or False"""
-        if self.capital < 0:
+        if self.capital <= 0:
             return True
         return False
 
@@ -89,6 +124,18 @@ class CommercialBuilding(Building):
             self.available_goods[product.name] = QuantifiedProduct().construct_from_product(product, quantity)
         else:
             self.available_goods[product.name].quantity += quantity
+        return self
+
+    def evolve(self, clock: object) -> object:
+        """
+            Allow all the components to evolve. All the update() of these elements will be launched
+            one time
+        """
+        if self.is_in_deficit():
+            self._is_searching_for_applicants = False
+        if self.capital != self._last_capital:
+            self._capital_history[clock.time] = self.capital
+        self._last_capital = self.capital
         return self
 
 

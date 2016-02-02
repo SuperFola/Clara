@@ -4,4 +4,4 @@ Code par Folaefolc
 Licence MIT
 """
 
-from . import interests, person
+from . import interests, person, time
