@@ -78,7 +78,7 @@ class Leaf(Node):
 
     def play(self):
         """Cc"""
-        return
+        return self
 
     def get_child_by_name(self, name: str):
         raise PermissionError("A leaf can not have a child !")
@@ -87,7 +87,7 @@ class Leaf(Node):
         raise PermissionError("A leaf can not have a child !")
 
     def remove_child_where_name_is(self, name: str):
-        raise PermissionError("A leaf has no child !")
+        raise PermissionError("A leaf can not have a child !")
 
 
 class BehaviorTree:
@@ -115,7 +115,7 @@ class BehaviorTree:
             if node.priority > max_priority:
                 max_priority = node.priority
         if max_priority:
-            order = sorted([child.priority for child in self.tree.childs])
+            order = sorted(child.priority for child in self.tree.childs)
             already_played = []
             for priority in order:
                 for node in self.tree.childs:
@@ -125,7 +125,3 @@ class BehaviorTree:
         else:
             for node in self.tree.childs:
                 node.play()
-
-
-class Stack:
-    pass

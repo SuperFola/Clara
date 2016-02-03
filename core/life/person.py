@@ -5,6 +5,7 @@ Licence MIT
 """
 
 from .time import Condition
+from . import behavior_tree
 
 
 class Person:
@@ -15,6 +16,11 @@ class Person:
         self.interests = []
         self.scheduled_events = []
         self.state = {}
+        self.behavior_tree = behavior_tree.BehaviorTree()
+
+    def get_behavior_tree(self) -> behavior_tree.BehaviorTree:
+        """Return the behavior tree of this Person ; in order to modify it for example"""
+        return self.behavior_tree
 
     def add_event(self, event: object) -> object:
         """Add an event to the event list of this person"""

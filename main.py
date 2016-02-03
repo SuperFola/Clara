@@ -36,7 +36,20 @@ def main(*args):
 
     the_time = core.life.time.Time()
 
-    a_person = core.life.person.Person("Patrick", "Joe", 0)
+    a_person = core.life.person.Person("Patrick", "Doe", 0)
+    a_person.get_behavior_tree()\
+        .add_child(
+            core.life.behavior_tree.Sequence("sequence", 0.5)
+        ).get_child_by_name("sequence")\
+        .add_child(
+            core.life.behavior_tree.Leaf("eat")
+        ).add_child(
+            core.life.behavior_tree.Leaf("sleep")
+        ).add_child(
+            core.life.behavior_tree.Leaf("wake up")
+        ).add_child(
+            core.life.behavior_tree.Leaf("go to work")
+        )
 
     city = core.town.city.City("SmallVille")
     city.add_clock(the_time)\
