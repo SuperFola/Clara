@@ -4,4 +4,7 @@ Code par Folaefolc
 Licence MIT
 """
 
-from . import interests, person, time, behavior_tree, constants
+
+SUCCESS = 1
+RUNNING = 0
+FAILURE = -1
