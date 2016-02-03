@@ -12,6 +12,7 @@ class Node:
         self.childs = []
         self.name = name
         self.priority = priority
+        self.stopped_there = False
 
     def get_child_by_name(self, name: str) -> object:
         """Search for a node named 'name' in the childs and return it"""
@@ -49,17 +50,15 @@ class Sequence(Node):
 
     def play(self):
         """Read the sequence in its order and start each action of each node"""
-        final_status = constants.RUNNING
-        while True:
-            status = self.next()
-            if status["status"] == constants.SUCCESS:
-                final_status = constants.SUCCESS
-                break
-        return final_status
+        return self.next()
 
     def next(self):
-        status = self.childs[self.current].play()
-        self.current += 1
+        if self.current < len(self.childs):
+            status = self.childs[self.current].play()
+            self.current += 1
+        else:
+            status = self.childs[0].play()
+            self.current = 1
         if status["status"] == constants.SUCCESS and self.current < len(self.childs) - 1:
             return {
                 "status": constants.RUNNING,
@@ -79,7 +78,8 @@ class Leaf(Node):
     def play(self):
         """Start the action of this leaf"""
         return {
-            "from": str(self)
+            "from": str(self),
+            "status": constants.SUCCESS
         }
 
     def get_child_by_name(self, name: str):
