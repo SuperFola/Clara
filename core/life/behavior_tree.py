@@ -20,7 +20,7 @@ class Node:
                 return node
         raise ValueError("No child is named '{}' in the node '{}'".format(name, self))
 
-    def add_child(self, child: Node) -> object:
+    def add_child(self, child: object) -> object:
         """Add a child to the node"""
         self.childs.append(child)
         return self
@@ -77,8 +77,10 @@ class Leaf(Node):
         super().__init__(name, priority)
 
     def play(self):
-        """Cc"""
-        return self
+        """Start the action of this leaf"""
+        return {
+            "from": str(self)
+        }
 
     def get_child_by_name(self, name: str):
         raise PermissionError("A leaf can not have a child !")

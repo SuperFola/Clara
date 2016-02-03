@@ -79,7 +79,7 @@ class TriggerEvent:
         total = 0.0
         for state in current:
             for cond in self.condition:
-                if state.key == cond.key and cond.value == cond.value:
+                if state.key == cond.key and state.value == cond.value:
                     total += cond.importance
                 if total >= 1.0:
                     break
@@ -87,6 +87,8 @@ class TriggerEvent:
                 break
         if total:
             self.trigger()
+        else:
+            self.untrigger()
         return self.triggered
 
     def should_last(self, states: list) -> bool:
@@ -95,7 +97,13 @@ class TriggerEvent:
             for cond in self.condition:
                 if cond.key == "end_time" and state.key == "time" and cond.value == state.value:
                     return False
-        return True
+                elif cond.key == "end_time" and state.key == "time" and cond.value > state.value:
+                    return True
+        return False
+
+    def untrigger(self):
+        """Disable the trigger"""
+        self.triggered = False
 
     def trigger(self):
         """Activate the trigger"""
@@ -133,7 +141,6 @@ class Habit:
     def start(self) -> object:
         """Start 'doing' the habit"""
         self.launched = True
-        print("\t\t\t\t Owner stopped doing {}".format(self))
         return self
 
     def stop(self) -> object:
@@ -157,4 +164,5 @@ class Event(Habit):
         """Start 'doing' the habit"""
         if not self.has_already_been_launched:
             self.has_already_been_launched = True
-            super(self).start()
+            self.launched = True
+        return self

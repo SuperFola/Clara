@@ -50,6 +50,21 @@ def main(*args):
         ).add_child(
             core.life.behavior_tree.Leaf("go to work")
         )
+    a_person.add_scheduled_event(
+        core.life.time.Event(
+            "going to see the boss",
+            core.life.time.TriggerEvent(
+                0,
+                [
+                    core.life.time.Condition("time", 3, 0.5),
+                    core.life.time.Condition("end_time", 5, 0.5)
+                ]
+            ),
+            core.life.time.Action(
+                "moving and going to see the boss -action"
+            )
+        )
+    )
 
     city = core.town.city.City("SmallVille")
     city.add_clock(the_time)\
@@ -70,12 +85,14 @@ def main(*args):
         .add_settler(a_person)
 
     print_city_streets_and_connections(city)
+    print("\n" + "- " * 10 + "\n")
 
     while True:
         print("Evolving - Time is {}".format(the_time))
-        the_time.next()
         city.evolve()
+        the_time.next()
         time.sleep(0.5)
+        print("- " * 10)
 
 
 if __name__ == '__main__':
