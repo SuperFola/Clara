@@ -38,13 +38,17 @@ class Person:
     def evolve(self, clock: object) -> object:
         """Allow this person to evolve (example : birthday, special project planed ...)"""
         print("\t\t\t {} is evolving".format(self))
-        
+
         self.events_stack["time"] = Condition("time", clock.time, 0.0)
+        events_launched = []
 
         for event in self.scheduled_events:
             ret = event.check(list(self.events_stack.values()))
             if ret:
+                events_launched.append(event)
                 print("\t\t\t\t {} started '{}'".format(self, event))
+        self.behavior_tree.play()
+
         return self
 
     def __repr__(self):
