@@ -5,6 +5,7 @@ Licence MIT
 """
 
 from .buildings import Building
+from ..life import person
 
 
 class Street:
@@ -13,6 +14,24 @@ class Street:
         self.size = size
         self.buildings = []
         self.connections = []
+        self.persons_in = []
+
+    def add_a_person(self, a_person: person.Person) -> object:
+        """Add a person in the street"""
+        self.persons_in.append(a_person)
+        return self
+
+    def remove_a_person_from_name(self, name: str) -> object:
+        """Search a person by his/her name and remove it from the street"""
+        to_pop = -1
+        for i in range(len(self.persons_in)):
+            if self.persons_in[i].name == name:
+                to_pop = i
+                break
+        if to_pop != -1:
+            self.persons_in.pop(to_pop)
+            return self
+        raise ValueError("Person named '{}' can't be located in this street. Try to look directly in the buildings".format(name))
 
     def get_buildind_by_name(self, name: str) -> Building:
         """Search for a building named 'name' and return it if it is in this street"""

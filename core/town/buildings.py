@@ -47,8 +47,9 @@ class House(Building):
         self.peoples_living_in = []
         self.street = on_street
 
-    def quit_the_house(self) -> object:
+    def quit_the_house(self, person: object) -> object:
         """Allow a member of the house to quit it in order, for example, to go to work"""
+        self.street.add_a_person(person)
         return self.get_location()
 
     def get_location(self) -> object:
