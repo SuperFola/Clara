@@ -47,7 +47,7 @@ class Person:
             if ret:
                 events_launched.append(event)
                 print("\t\t\t\t {} started '{}'".format(self, event))
-        self.behavior_tree.play()
+        print("\t\t\t\t {} played {} from his behavior tree".format(self, self.behavior_tree.play()))
 
         return self
 

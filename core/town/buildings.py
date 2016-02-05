@@ -42,9 +42,18 @@ class Building:
 
 
 class House(Building):
-    def __init__(self, name: str="", *interests_involved):
+    def __init__(self, name: str, on_street: object, *interests_involved):
         super().__init__(name, *interests_involved)
         self.peoples_living_in = []
+        self.street = on_street
+
+    def quit_the_house(self) -> object:
+        """Allow a member of the house to quit it in order, for example, to go to work"""
+        return self.get_location()
+
+    def get_location(self) -> object:
+        """Get the Street where this house is located"""
+        return self.street
 
     def has_habitant(self, habitant: Person) -> bool:
         """Return True or False whether an habitant is in the house or not"""

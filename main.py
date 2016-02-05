@@ -79,7 +79,10 @@ def main(*args):
         .connect_to(city.get_street_by_name(street2))\
         .connect_to(city.get_street_by_name(street3))
     city.get_street_by_name(street1)\
-        .add(core.town.buildings.House("A house"))
+        .add(core.town.buildings.House(
+            "A house",
+            city.get_street_by_name(street1)
+        ))
     city.get_street_by_name(street1)\
         .get_buildind_by_name("A house")\
         .add_settler(a_person)
