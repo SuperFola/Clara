@@ -22,5 +22,5 @@ class QuantifiedProduct(Product):
         self.name = product.name
         self.price = product.price
         self.quality = product.quality
-        self.quality = quantity
+        self.quantity = quantity
         return self
