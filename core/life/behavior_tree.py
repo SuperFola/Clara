@@ -90,7 +90,7 @@ class Sequence(Node):
             status = self.childs[0].play()
             self.current = 1
 
-        if status["status"] == constants.SUCCESS and self.current < len(self.childs) - 1:
+        if status["status"] == constants.SUCCESS and self.current < len(self.childs):
             return {
                 "status": constants.RUNNING,
                 "from": status["from"]
@@ -98,6 +98,17 @@ class Sequence(Node):
         elif status["status"] == constants.SUCCESS and self.current == len(self.childs):
             return {
                 "status": constants.SUCCESS,
+                "from": status["from"]
+            }
+        elif status["status"] == constants.FAILURE:
+            self.current = 0
+            return {
+                "status": constants.FAILURE,
+                "from": status["from"]
+            }
+        elif status["status"] == constants.RUNNING:
+            return {
+                "status": constants.RUNNING,
                 "from": status["from"]
             }
 

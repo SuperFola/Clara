@@ -39,9 +39,10 @@ def main(*args):
     a_person = core.life.person.Person("Patrick", "Doe", 0)
     a_person.get_behavior_tree()\
         .add_child(
-            core.life.behavior_tree.Sequence("sequence", 0.5)
-        ).get_child_by_name("sequence")\
-        .add_child(
+            core.life.behavior_tree.Sequence("sequence", 0.4)
+        ).get_child_by_name(
+            "sequence"
+        ).add_child(
             core.life.behavior_tree.Leaf("eat")
         ).add_child(
             core.life.behavior_tree.Leaf("sleep")
@@ -50,18 +51,30 @@ def main(*args):
         ).add_child(
             core.life.behavior_tree.Leaf("go to work")
         )
+    a_person.get_behavior_tree()\
+        .add_child(
+            core.life.behavior_tree.Node("node", 1.0)
+        ).get_child_by_name(
+            "node"
+        ).add_child(
+            core.life.behavior_tree.Leaf("first work with high priority", 0.8)
+        ).add_child(
+            core.life.behavior_tree.Leaf("second work with low priority", 0.1)
+        ).add_child(
+            core.life.behavior_tree.Leaf("third work with normal priority", 0.5)
+        )
     a_person.add_scheduled_event(
         core.life.time.Event(
             "going to see the boss",
             core.life.time.TriggerEvent(
-                0,
-                [
+                at=0,
+                cond=[
                     core.life.time.Condition("time", 3, 0.5),
                     core.life.time.Condition("end_time", 5, 0.5)
                 ]
             ),
             core.life.time.Action(
-                "moving and going to see the boss -action"
+                name="moving and going to see the boss -action"
             )
         )
     )

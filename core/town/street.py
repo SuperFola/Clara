@@ -6,6 +6,7 @@ Licence MIT
 
 from .buildings import Building
 from ..life import person
+from ..life import time
 
 
 class Street:
@@ -74,6 +75,9 @@ class Street:
         print("\t {} is evolving".format(self))
         for building in self.buildings:
             building.evolve(clock)
+        for person in self.persons_in:
+            person.handle_event(time.Condition("persons", [_ for _ in self.persons_in if _ != person], 0.1))
+            person.evolve(clock)
         self._update(clock)
         return self
 

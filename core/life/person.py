@@ -20,7 +20,7 @@ class Person:
         self.events_stack = {}
         self.behavior_tree = behavior_tree.BehaviorTree()
 
-    def handle_event(self, event) -> tuple:
+    def handle_event(self, event: Condition) -> tuple:
         """Add an event to the events stack of this person"""
         self.events_stack[Person.seed] = event
         Person.seed += 1
@@ -55,4 +55,4 @@ class Person:
         return self.__str__()
 
     def __str__(self):
-        return self.name
+        return "{} {}".format(self.name, self.surname)
