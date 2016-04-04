@@ -36,7 +36,7 @@ def main(*args):
 
     the_time = core.life.time.Time()
 
-    a_person = core.life.person.Person("Patrick", "Doe", 0)
+    a_person = core.life.person.Person("John", "Doe", 0)
     a_person.get_behavior_tree()\
         .add_child(
             core.life.behavior_tree.Sequence("sequence", 0.4)

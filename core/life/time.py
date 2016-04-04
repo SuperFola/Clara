@@ -6,13 +6,42 @@ Licence MIT
 
 
 class Time:
+    minute_lenght = 60
+    hour_lenght = 60
+    day_lenght = 24
+    week_lenght = 7
+    year_lenght = 52
+
     def __init__(self):
         self.time = 0
-        self.minute_lenght = 60
-        self.hour_lenght = 60
-        self.day_lenght = 24
-        self.week_lenght = 7
-        self.year_lenght = 52
+
+    @staticmethod
+    def get_x_in_y_lenght(x: str, y: str):
+        """Return the value X in the Y unity"""
+        order = [
+            "minute",
+            "hour",
+            "day",
+            "week",
+            "year"
+        ]
+        unities = {
+            "minute": Time.minute_lenght,
+            "hour": Time.hour_lenght,
+            "day": Time.day_lenght,
+            "week": Time.week_lenght,
+            "year": Time.year_lenght
+        }
+
+        if x in unities.keys() and y in unities.keys():
+            space = order.index(y) - order.index(x)
+            start_index = order.index(x)
+            work = 1
+            to_treat = order[start_index:space + 1] if space > 0 else order[::-1][start_index:abs(space) + 1]
+            for e in to_treat:
+                work *= e
+            return work
+        return None
 
     def next(self):
         """Update the current time"""
@@ -20,23 +49,23 @@ class Time:
 
     def get_in_minutes(self) -> int:
         """Return the current time in minutes"""
-        return self.time // self.minute_lenght
+        return self.time // Time.minute_lenght
 
     def get_in_hours(self) -> int:
         """Return the current time in hours"""
-        return self.get_in_minutes() // self.hour_lenght
+        return self.get_in_minutes() // Time.hour_lenght
 
     def get_in_days(self) -> int:
         """Return the current time in days"""
-        return self.get_in_hours() // self.day_lenght
+        return self.get_in_hours() // Time.day_lenght
 
     def get_in_weeks(self) -> int:
         """Return the current time in weeks"""
-        return self.get_in_days() // self.week_lenght
+        return self.get_in_days() // Time.week_lenght
 
     def get_in_year(self) -> int:
         """Return the current time in years"""
-        return self.get_in_weeks() // self.year_lenght
+        return self.get_in_weeks() // Time.year_lenght
 
     def get_full_year_length_in(self, category: str) -> int:
         """Return the length of the year in 'category' unit"""
@@ -44,15 +73,15 @@ class Time:
             if category.lower() == 'years':
                 return 1
             elif category.lower() == 'weeks':
-                return self.year_lenght
+                return Time.year_lenght
             elif category.lower() == 'days':
-                return self.week_lenght * self.get_full_year_length_in('weeks')
+                return Time.week_lenght * self.get_full_year_length_in('weeks')
             elif category.lower() == 'hours':
-                return self.day_lenght * self.get_full_year_length_in('days')
+                return Time.day_lenght * self.get_full_year_length_in('days')
             elif category.lower() == 'minutes':
-                return self.hour_lenght * self.get_full_year_length_in('hours')
+                return Time.hour_lenght * self.get_full_year_length_in('hours')
             elif category.lower() == 'seconds':
-                return self.minute_lenght * self.get_full_year_length_in('minutes')
+                return Time.minute_lenght * self.get_full_year_length_in('minutes')
 
     def __repr__(self):
         return self.__str__()

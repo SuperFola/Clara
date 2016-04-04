@@ -5,13 +5,16 @@ Licence MIT
 """
 
 from ..life.person import Person
+from ..life import time
 from ..objects.product import Product, QuantifiedProduct
 
 
 class Building:
-    def __init__(self, name: str="", *interests_involved):
+    def __init__(self, name: str, street: object, *interests_involved):
         self.name = name
+        self.street = street
         self.interests_involved = interests_involved
+        self.persons = []
 
     def can_interest(self, person: Person) -> float:
         """Return a percentage of possibility to interest someone"""
@@ -23,7 +26,9 @@ class Building:
 
     def _update(self, clock: object):
         """This will update some parts of the building"""
-        pass
+        for person in self.persons:
+            person.handle_event(time.Condition("persons", [_ for _ in self.persons if _ != person], 0.1))
+            person.evolve(clock)
 
     def evolve(self, clock: object) -> object:
         """
@@ -34,6 +39,18 @@ class Building:
         self._update(clock)
         return self
 
+    def get_location(self) -> object:
+        """Get the Street where this building is located"""
+        return self.street
+
+    def quit(self, person: object) -> object:
+        """Allow a member of the building to quit it in order, for example, to go to work"""
+        return self.street.add_a_person(person)
+
+    def _has_person(self, person: Person):
+        """Return True or False whether an habitant is in the house or not"""
+        return person in self.persons
+
     def __repr__(self):
         return self.__str__()
 
@@ -43,28 +60,15 @@ class Building:
 
 class House(Building):
     def __init__(self, name: str, on_street: object, *interests_involved):
-        super().__init__(name, *interests_involved)
-        self.peoples_living_in = []
-        self.street = on_street
-
-    def quit_the_house(self, person: object) -> object:
-        """Allow a member of the house to quit it in order, for example, to go to work"""
-        self.street.add_a_person(person)
-        return self.get_location()
-
-    def get_location(self) -> object:
-        """Get the Street where this house is located"""
-        return self.street
+        super().__init__(name, on_street, *interests_involved)
 
     def has_habitant(self, habitant: Person) -> bool:
         """Return True or False whether an habitant is in the house or not"""
-        if habitant in self.peoples_living_in:
-            return True
-        return False
+        return self._has_person(habitant)
 
     def has_habitant_name(self, habitant_name: str) -> bool:
         """Return True or False whether an habitant with the name given is in the house or not"""
-        for habitant in self.peoples_living_in:
+        for habitant in self.persons:
             if habitant.name == habitant_name:
                 return True
         return False
@@ -72,7 +76,7 @@ class House(Building):
     def get_habitant_by_name(self, habitant_name: str) -> Person:
         """Return a Person object, which matches the name given"""
         if self.has_habitant_name(habitant_name):
-            for habitant in self.peoples_living_in:
+            for habitant in self.persons:
                 if habitant.name == habitant_name:
                     return habitant
         else:
@@ -80,15 +84,16 @@ class House(Building):
 
     def add_settler(self, habitant: Person) -> object:
         """Add a person in a house (he/she is not in the house, but living in)"""
-        self.peoples_living_in.append(habitant)
+        self.persons.append(habitant)
         return self
 
     def remove_settler(self, habitant_name: str) -> object:
         """Remove someone from the house (he/she can be outside the house, he/she will just have to found
            a new house)"""
-        for i in range(len(self.peoples_living_in)):
-            if self.peoples_living_in[i].name == habitant_name:
-                self.peoples_living_in.pop(i)
+        for i in range(len(self.persons)):
+            if self.persons[i].name == habitant_name:
+                self.persons.pop(i)
+                break
         return self
 
     def evolve(self, clock: object) -> object:
@@ -97,8 +102,7 @@ class House(Building):
             one time
         """
         print("\t\t {} is evolving".format(self))
-        for person in self.peoples_living_in:
-            person.evolve(clock)
+
         self._update(clock)
         return self
 
@@ -150,11 +154,15 @@ class CommercialBuilding(Building):
             one time
         """
         print("\t\t {} is evolving".format(self))
+
         if self.is_in_deficit():
             self._is_searching_for_applicants = False
         if self.capital != self._last_capital:
             self._capital_history[clock.time] = self.capital
         self._last_capital = self.capital
+
+        self._update(clock)
+
         return self
 
 
