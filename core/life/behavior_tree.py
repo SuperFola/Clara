@@ -5,6 +5,7 @@ Licence MIT
 """
 
 from . import constants
+from . import time
 
 
 class Node:
@@ -114,8 +115,19 @@ class Sequence(Node):
 
 
 class Leaf(Node):
-    def __init__(self, name: str="", priority: float=0.0):
+    def __init__(self, name: str, priority: float=0.0, cond: time.Condition=time.Condition("", "", 0.0)):
         super().__init__(name, priority)
+        self.cond = cond
+
+    def check(self, current: list) -> bool:
+        """Check if the trigger should be launched or not"""
+        total = self.priority
+        for state in current:
+            if state.key == self.cond.key and state.value == self.cond.value:
+                total += self.cond.importance
+            if total >= 1.0:
+                break
+        return total > 1.0
 
     def play(self):
         """Start the action of this leaf"""
