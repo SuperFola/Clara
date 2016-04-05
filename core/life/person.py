@@ -6,6 +6,7 @@ Licence MIT
 
 from .time import Condition
 from . import behavior_tree
+from . import constants
 
 
 class Person:
@@ -48,7 +49,10 @@ class Person:
                 events_launched.append(event)
                 print("\t\t\t\t {} started '{}'".format(self, event))
 
-        print("\t\t\t\t {} played {} from his behavior tree".format(self, self.behavior_tree.play()))
+        action = self.behavior_tree.play(list(self.events_stack.values()))
+        status = "achieved" if action['status'] == constants.SUCCESS else "still running" if action['status'] == constants.RUNNING else "failed" if action['status'] == constants.FAILURE else "status unknown"
+
+        print("\t\t\t\t {} played {} ({}) from his behavior tree".format(self, action['from'], status))
 
         return self
 

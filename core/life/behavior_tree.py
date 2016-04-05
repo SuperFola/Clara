@@ -38,32 +38,25 @@ class Node:
             self.childs.pop(to_pop)
         return self
 
-    def play(self) -> dict:
+    def play(self, states: list) -> dict:
         """Launch the action of the childs nodes, after having ordered them by priority if there is one"""
         max_priority = 0.0
-        action = {}
         for node in self.childs:
             if node.priority > max_priority:
                 max_priority = node.priority
+
         if max_priority:
-            order = sorted(child.priority for child in self.childs)
-            already_played = []
-            playing = False
-            for priority in order:
-                for node in self.childs:
-                    if node.priority == priority and node not in already_played:
-                        action = node.play()
-                        already_played.append(node)
-                        playing = True
-                    if playing:
-                        break
-                if playing:
-                    break
+            order = sorted(self.childs, key=lambda x: x.priority)[::-1]
+
+            tmp = order.pop(self.cpt)
+            action = tmp.play(states)
         else:
-            action = self.childs[self.cpt].play()
-            self.cpt += 1
-            if self.cpt == len(self.childs) - 1:
-                self.cpt = 0
+            action = self.childs[self.cpt].play(states)
+
+        self.cpt += 1
+        if self.cpt == len(self.childs):
+            self.cpt = 0
+
         return action
 
     def __repr__(self):
@@ -78,17 +71,17 @@ class Sequence(Node):
         super().__init__(name, priority)
         self.current = 0
 
-    def play(self) -> dict:
+    def play(self, states: list) -> dict:
         """Read the sequence in its order and start each action of each node"""
-        return self.next()
+        return self.next(states)
 
-    def next(self) -> dict:
+    def next(self, states: list) -> dict:
         """Iter on the list of childs and launch them in a specifical order"""
         if self.current < len(self.childs):
-            status = self.childs[self.current].play()
+            status = self.childs[self.current].play(states)
             self.current += 1
         else:
-            status = self.childs[0].play()
+            status = self.childs[0].play(states)
             self.current = 1
 
         if status["status"] == constants.SUCCESS and self.current < len(self.childs):
@@ -122,18 +115,21 @@ class Leaf(Node):
     def check(self, current: list) -> bool:
         """Check if the trigger should be launched or not"""
         total = self.priority
-        for state in current:
-            if state.key == self.cond.key and state.value == self.cond.value:
-                total += self.cond.importance
-            if total >= 1.0:
-                break
-        return total > 1.0
+        if self.cond.key != "" and self.cond.value != "":
+            for state in current:
+                if state.key == self.cond.key and state.value == self.cond.value:
+                    total += self.cond.importance
+                if total >= 1.0:
+                    break
+            return total > 1.0
+        # we do not have any condition, it is working every time
+        return True
 
-    def play(self):
+    def play(self, states: list):
         """Start the action of this leaf"""
         return {
             "from": str(self),
-            "status": constants.SUCCESS
+            "status": constants.SUCCESS if self.check(states) else constants.FAILURE
         }
 
     def get_child_by_name(self, name: str):
@@ -164,6 +160,6 @@ class BehaviorTree:
         self.tree.remove_child_where_name_is(name)
         return self
 
-    def play(self) -> dict:
+    def play(self, states: list) -> dict:
         """Launch the action of the childs nodes, after having ordered them by priority if there is one"""
-        return self.tree.play()
+        return self.tree.play(states)
