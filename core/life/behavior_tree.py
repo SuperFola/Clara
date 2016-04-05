@@ -53,7 +53,8 @@ class Node:
         else:
             action = self.childs[self.cpt].play(states)
 
-        self.cpt += 1
+        if action['status'] == constants.FAILURE or action['status'] == constants.SUCCESS:
+            self.cpt += 1
         if self.cpt == len(self.childs):
             self.cpt = 0
 
