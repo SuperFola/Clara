@@ -51,14 +51,7 @@ class Person:
 
         action = self.behavior_tree.play(list(self.events_stack.values()))
 
-        if action['status'] == constants.SUCCESS:
-            status = "achieved"
-        elif action['status'] == constants.RUNNING:
-            status = "still running"
-        elif action['status'] == constants.FAILURE:
-            status = "failed"
-        else:
-            status = "status unknown"
+        status = constants.convert_status_to_str(action['status'])
 
         print("\t\t\t\t {} played {} ({}) from his behavior tree".format(self, action['from'], status))
 
