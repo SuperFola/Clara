@@ -4,7 +4,6 @@ Code par Folaefolc
 Licence MIT
 """
 
-import sys
 import time
 import core
 
@@ -28,7 +27,7 @@ def print_city_streets_and_connections(city: core.town.city.City):
                 print(".")
 
 
-def main(*args):
+def main():
     street1 = "Baxbaxwalanuksiwe"
     street2 = "Ardakaniz"
     street3 = "Qames"
@@ -37,6 +36,10 @@ def main(*args):
     the_time = core.life.time.Time()
 
     a_person = core.life.person.Person("John", "Doe", 0)
+    a_person.get_behavior_tree()\
+        .callbacks.update({
+            "go to work": core.life.callbacks.test_callback
+        })
     a_person.get_behavior_tree()\
         .add_child(
             core.life.behavior_tree.Sequence("sequence", 0.4)
@@ -112,4 +115,4 @@ def main(*args):
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:] if sys.argv[1:] else [])
+    main()

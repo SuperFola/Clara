@@ -57,6 +57,7 @@ class Node:
             self.cpt += 1
         self.cpt %= len(self.childs)
 
+        action.update({"status": constants.RUNNING if self.cpt else constants.SUCCESS})
         return action
 
     def __repr__(self):
@@ -106,8 +107,9 @@ class Leaf(Node):
         self.cond = cond
 
     def check(self, current: list) -> bool:
-        """Check if the trigger should be launched or not"""
+        """Check if the leaf should be triggered or not"""
         total = self.priority
+
         if self.cond.key != "" and self.cond.value != "":
             for state in current:
                 if state.key == self.cond.key and state.value == self.cond.value:
@@ -115,6 +117,7 @@ class Leaf(Node):
                 if total >= 1.0:
                     break
             return total > 1.0
+
         # we do not have any condition, it is working every time
         return True
 
@@ -135,24 +138,32 @@ class Leaf(Node):
         raise PermissionError("A leaf can not have a child !")
 
 
-class BehaviorTree:
-    def __init__(self):
-        self.tree = Node("main")
-
-    def add_child(self, child: Node) -> object:
-        """Add a child to the main node"""
-        self.tree.add_child(child)
-        return self
-
-    def get_child_by_name(self, name: str) -> Node:
-        """Get a child node by his name and return it"""
-        return self.tree.get_child_by_name(name)
-
-    def remove_child_where_name_is(self, name: str) -> object:
-        """Remove a child by his name"""
-        self.tree.remove_child_where_name_is(name)
-        return self
+class BehaviorTree(Node):
+    def __init__(self, **callbacks):
+        super().__init__("main", 0.0)
+        self.callbacks = callbacks
 
     def play(self, states: list) -> dict:
         """Launch the action of the childs nodes, after having ordered them by priority if there is one"""
-        return self.tree.play(states)
+        max_priority = 0.0
+        for node in self.childs:
+            if node.priority > max_priority:
+                max_priority = node.priority
+
+        if max_priority:
+            order = sorted(self.childs, key=lambda x: x.priority)[::-1]
+
+            tmp = order.pop(self.cpt)
+            action = tmp.play(states)
+        else:
+            action = self.childs[self.cpt].play(states)
+
+        if action['status'] != constants.RUNNING:
+            self.cpt += 1
+        self.cpt %= len(self.childs)
+
+        if action['from'] in self.callbacks.keys():
+            # if we have a callback for this action, we call it, passing to it the states and the status of the action
+            self.callbacks[action['from']](status=action['status'], states=states)
+
+        return action

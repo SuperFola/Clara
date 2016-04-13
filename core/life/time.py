@@ -39,7 +39,7 @@ class Time:
             work = 1
             to_treat = order[start_index:space + 1] if space > 0 else order[::-1][start_index:abs(space) + 1]
             for e in to_treat:
-                work *= e
+                work *= unities[e]
             return work
         return None
 
@@ -96,6 +96,12 @@ class Condition:
         self.value = value
         self.importance = importance
 
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return "{k}: {v} ({i})".format(k=self.key, v=self.value, i=self.importance)
+
 
 class TriggerEvent:
     def __init__(self, at: float, cond: list):
@@ -106,7 +112,12 @@ class TriggerEvent:
     def check(self, current: list) -> bool:
         """Check if the trigger should be launched or not"""
         total = 0.0
+        current_time = -1
+
         for state in current:
+            if state.key == "time":
+                current_time = state.value
+
             for cond in self.condition:
                 if state.key == cond.key and state.value == cond.value:
                     total += cond.importance
@@ -114,10 +125,15 @@ class TriggerEvent:
                     break
             if total >= 1.0:
                 break
-        if total:
+
+        if total and current_time % Time.get_x_in_y_lenght("minute", "year") == self.time:
             self.trigger()
+        elif total:
+            # to continue the action in the time if needed
+            pass
         else:
             self.untrigger()
+
         return self.triggered
 
     def should_last(self, states: list) -> bool:
@@ -137,6 +153,12 @@ class TriggerEvent:
     def trigger(self):
         """Activate the trigger"""
         self.triggered = True
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return "condition: {c} ; at: {t}".format(c=self.condition, t=self.time)
 
 
 class Action:
@@ -160,11 +182,13 @@ class Habit:
     def check(self, states: list) -> bool:
         """Check if the habit should be launched"""
         self.trigger_event.check(states)
+
         if self.trigger_event.triggered and not self.launched:
             self.start()
         elif self.launched:
             if not self.trigger_event.should_last(states):
                 self.stop()
+
         return self.launched
 
     def start(self) -> object:
@@ -181,7 +205,7 @@ class Habit:
         return self.__str__()
 
     def __str__(self):
-        return self.name
+        return self.name, self.action
 
 
 class Event(Habit):

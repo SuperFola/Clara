@@ -36,7 +36,7 @@ class Person:
         self.scheduled_events.append(event)
         return self
 
-    def evolve(self, clock: object) -> object:
+    def evolve(self, clock: behavior_tree.time.Time) -> object:
         """Allow this person to evolve (example : birthday, special project planed ...)"""
         print("\t\t\t {} is evolving".format(self))
 
@@ -50,7 +50,15 @@ class Person:
                 print("\t\t\t\t {} started '{}'".format(self, event))
 
         action = self.behavior_tree.play(list(self.events_stack.values()))
-        status = "achieved" if action['status'] == constants.SUCCESS else "still running" if action['status'] == constants.RUNNING else "failed" if action['status'] == constants.FAILURE else "status unknown"
+
+        if action['status'] == constants.SUCCESS:
+            status = "achieved"
+        elif action['status'] == constants.RUNNING:
+            status = "still running"
+        elif action['status'] == constants.FAILURE:
+            status = "failed"
+        else:
+            status = "status unknown"
 
         print("\t\t\t\t {} played {} ({}) from his behavior tree".format(self, action['from'], status))
 

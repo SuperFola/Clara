@@ -148,7 +148,7 @@ class CommercialBuilding(Building):
             self.available_goods[product.name].quantity += quantity
         return self
 
-    def evolve(self, clock: object) -> object:
+    def evolve(self, clock: time.Time) -> object:
         """
             Allow all the components to evolve. All the update() of these elements will be launched
             one time
