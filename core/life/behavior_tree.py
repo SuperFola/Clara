@@ -55,8 +55,7 @@ class Node:
 
         if action['status'] == constants.FAILURE or action['status'] == constants.SUCCESS:
             self.cpt += 1
-        if self.cpt == len(self.childs):
-            self.cpt = 0
+        self.cpt %= len(self.childs)
 
         return action
 
@@ -79,33 +78,26 @@ class Sequence(Node):
     def next(self, states: list) -> dict:
         """Iter on the list of childs and launch them in a specifical order"""
         if self.current < len(self.childs):
-            status = self.childs[self.current].play(states)
+            ret = self.childs[self.current].play(states)
             self.current += 1
         else:
-            status = self.childs[0].play(states)
+            ret = self.childs[0].play(states)
             self.current = 1
 
-        if status["status"] == constants.SUCCESS and self.current < len(self.childs):
-            return {
-                "status": constants.RUNNING,
-                "from": status["from"]
-            }
-        elif status["status"] == constants.SUCCESS and self.current == len(self.childs):
-            return {
-                "status": constants.SUCCESS,
-                "from": status["from"]
-            }
-        elif status["status"] == constants.FAILURE:
+        status = constants.RUNNING
+
+        if ret["status"] == constants.SUCCESS and self.current < len(self.childs):
+            status = constants.RUNNING
+        elif ret["status"] == constants.SUCCESS and self.current == len(self.childs):
+            status = constants.SUCCESS
+        elif ret["status"] == constants.FAILURE:
             self.current = 0
-            return {
-                "status": constants.FAILURE,
-                "from": status["from"]
-            }
-        elif status["status"] == constants.RUNNING:
-            return {
-                "status": constants.RUNNING,
-                "from": status["from"]
-            }
+            status = constants.FAILURE
+
+        return {
+            "status": status,
+            "from": ret["from"]
+        }
 
 
 class Leaf(Node):
